@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.graalvm.buildtools.native' version '0.9.28'
+}
+
+group = 'dev.vgerasimov'
+version = '0.0.1'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation 'dev.vgerasimov:pipes:0.0.1'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // DB
+    implementation 'com.influxdb:influxdb-client-java:7.2.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+
+    // Utilities and misc
+    implementation 'com.google.guava:guava:33.1.0-jre'
+    implementation 'org.apache.commons:commons-collections4:4.5.0-M1'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+bootJar {
+    processAot {
+        enabled = false
+    }
+}
+
+if (org.gradle.internal.os.OperatingSystem.current().isMacOsX() && "aarch64".equalsIgnoreCase(System.getProperty("os.arch"))) {
+    dependencies {
+        implementation group: 'io.netty', name: 'netty-resolver-dns-native-macos', classifier: 'osx-aarch_64', version: '4.1.109.Final'
+    }
+}

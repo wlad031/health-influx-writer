@@ -1,0 +1,43 @@
+#file: noinspection SpringBootApplicationYaml
+server.port: ${SERVER_PORT:6969}
+spring:
+  application:
+    name: health-influx-writer
+  main:
+    allow-bean-definition-overriding: true
+    banner-mode: off
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+
+steps:
+  - name: health-metrics-to-influx-points-converter
+    type: custom
+    class-name: dev.vgerasimov.health.influxwriter.HealthMetricsToInfluxPointsConverter
+    custom: ${CONVERTER_PROPERTIES}
+  - name: echo
+    type: echo
+  - name: read/json-file
+    type: read/json-file
+  - name: influx/sink
+    type: influx/sink
+    influx-url: ${INFLUX_URL}
+    influx-token: ${INFLUX_TOKEN}
+    influx-org: ${INFLUX_ORG}
+    influx-bucket: ${INFLUX_BUCKET}
+
+pipelines:
+  - name: main
+    steps:
+      - health-metrics-to-influx-points-converter
+      - influx/sink
+  - name: read-files
+    steps:
+      - read/json-file
+      - health-metrics-to-influx-points-converter
+      - influx/sink
+
+logging:
+  level:
+    dev.vgerasimov: debug

@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  health-influx-writer:
+    image: health-influx-writer
+    container_name: health-influx-writer
+    env_file:
+      - .env
+    build:
+      context: .
+    ports:
+      - "16969:80"
