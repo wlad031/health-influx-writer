@@ -177,6 +177,7 @@ public class HealthMetricsToInfluxPointsConverter extends CustomStep {
         List<Map<String, Object>> workouts,
         List<Map<String, Object>> ecg,
         List<Map<String, Object>> heartRateNotifications,
+        List<Map<String, Object>> stateOfMind,
         List<Map<String, Object>> symptoms) {
       record Metric(String name, String units, List<DataPoint> data) {
         record DataPoint(
